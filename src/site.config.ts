@@ -14,6 +14,6 @@ export const site = {
 // Podpis twórcy szablonu — TODO: uzupełnić przed pierwszą publikacją repozytorium petytor/jawna-sprawa.
 export const tworcaSzablonu = {
   nazwa: 'TODO',
-  linkKawa: 'https://buycoffee.to/TODO',
+  linkKawa: 'https://suppi.pl/mleczakm',
   linkInneProjekty: 'https://TODO',
 };
