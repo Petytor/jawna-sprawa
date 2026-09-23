@@ -7,7 +7,7 @@ export const site = {
   nazwaSprawy: 'Nazwa Twojej sprawy',
   opisSprawy: 'Krótki, rzeczowy opis — czego dotyczy sprawa i z jaką instytucją.',
   // Imię i nazwisko lub pseudonim osoby prowadzącej TĘ sprawę — używane w danych
-  // strukturalnych (schema.org/Person) jako autor wpisów.
+  // strukturalnych (schema.org/Person) jako autor wniosków.
   prowadzacy: 'Imię i nazwisko',
 };
 

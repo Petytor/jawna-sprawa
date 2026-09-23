@@ -1,18 +1,19 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { WNIOSEK_STATUSES } from './lib/wniosekStatus';
 
-// Jeden wpis = jedno zdarzenie w sprawie: pismo złożone, odpowiedź urzędu, notatka.
-// Pola muszą się zgadzać 1:1 z public/admin/config.yml (kolekcja "wpisy") — Decap i Astro
-// czytają ten sam front matter, ale nie dzielą jednego źródła prawdy, więc zmiana pola
-// wymaga edycji w obu miejscach.
-const wpisy = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/wpisy' }),
+// Jeden wniosek = jedna sprawa prowadzona z instytucją: pismo, jego oś czasu (kolejne statusy
+// z opcjonalnymi terminami) i powiązany dokument. Pola muszą się zgadzać 1:1 z
+// public/admin/config.yml (kolekcja "wnioski") — Decap i Astro czytają ten sam front matter,
+// ale nie dzielą jednego źródła prawdy, więc zmiana pola wymaga edycji w obu miejscach.
+const wnioski = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/wnioski' }),
   schema: z.object({
     tytul: z.string(),
-    data: z.coerce.date(),
-    urzad: z.string().optional(),
-    status: z.enum(['zlozone', 'w_toku', 'odpowiedz', 'zalatwione', 'odrzucone']),
+    instytucja: z.string().optional(),
+    // Główny dokument sprawy (PDF/skan) do podglądu — patrz DocumentPreview.astro.
+    dokument: z.string().optional(),
     zalaczniki: z
       .array(
         z.object({
@@ -21,10 +22,20 @@ const wpisy = defineCollection({
         }),
       )
       .default([]),
-    // Ustawiane ręcznie przy edycji, nie liczone automatycznie — Decap i tak zna datę
-    // commita, ale front matter jest czytelniejsze dla kogoś przeglądającego repo.
-    zaktualizowano: z.coerce.date().optional(),
+    // Oś czasu: każdy krok to wejście w dany status, z opcjonalnym terminem (w dniach) —
+    // patrz src/lib/stepAssessment.ts. Aktualny status sprawy to status ostatniego (wg daty)
+    // kroku, nie osobne pole — dzięki temu nie da się rozjechać z osią czasu.
+    kroki: z
+      .array(
+        z.object({
+          status: z.enum(WNIOSEK_STATUSES),
+          data: z.coerce.date(),
+          opis: z.string().optional(),
+          deadlineDni: z.number().int().min(1).max(366).optional(),
+        }),
+      )
+      .min(1),
   }),
 });
 
-export const collections = { wpisy };
+export const collections = { wnioski };

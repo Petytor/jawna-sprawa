@@ -1,19 +1,30 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
+import StatusBadge from '../components/StatusBadge.astro';
 import { site } from '../site.config';
+import { isOpenStatus, statusSortOrder } from '../lib/wniosekStatus';
+import { assessSteps, isPastDeadline } from '../lib/stepAssessment';
+import { pluralForm } from '../lib/polishPlural';
 
-const statusLabel: Record<string, string> = {
-  zlozone: 'Złożone',
-  w_toku: 'W toku',
-  odpowiedz: 'Jest odpowiedź',
-  zalatwione: 'Załatwione',
-  odrzucone: 'Odrzucone',
-};
+const today = new Date();
 
-const wpisy = (await getCollection('wpisy')).sort(
-  (a, b) => b.data.data.valueOf() - a.data.data.valueOf(),
-);
+function lastStep<T extends { data: Date }>(kroki: T[]): T {
+  return [...kroki].sort((a, b) => b.data.valueOf() - a.data.valueOf())[0];
+}
+
+function hasOverdueStep(kroki: Parameters<typeof assessSteps>[0]): boolean {
+  return [...assessSteps(kroki, today).values()].some((a) => isPastDeadline(a.timing));
+}
+
+const wnioski = (await getCollection('wnioski')).sort((a, b) => {
+  const statusOrder = statusSortOrder(lastStep(a.data.kroki).status) - statusSortOrder(lastStep(b.data.kroki).status);
+  return statusOrder !== 0 ? statusOrder : lastStep(b.data.kroki).data.valueOf() - lastStep(a.data.kroki).data.valueOf();
+});
+
+const wToku = wnioski.filter((w) => isOpenStatus(lastStep(w.data.kroki).status)).length;
+const przeterminowane = wnioski.filter((w) => hasOverdueStep(w.data.kroki)).length;
+const zalatwione = wnioski.length - wToku;
 ---
 
 <Layout title={site.nazwaSprawy} description={site.opisSprawy}>
@@ -23,27 +34,60 @@ const wpisy = (await getCollection('wpisy')).sort(
     <p class="mt-1 text-sm text-slate-400">Prowadzi: {site.prowadzacy}</p>
   </header>
 
+  {
+    wnioski.length > 0 && (
+      <dl class="mb-8 grid grid-cols-2 gap-4 rounded-lg border border-slate-200 p-4 text-center sm:grid-cols-4">
+        <div>
+          <dt class="text-2xl font-bold text-brand-dark">{wnioski.length}</dt>
+          <dd class="text-sm text-slate-500">{pluralForm(wnioski.length, 'wniosek', 'wnioski', 'wniosków')}</dd>
+        </div>
+        <div>
+          <dt class="text-2xl font-bold text-brand-dark">{wToku}</dt>
+          <dd class="text-sm text-slate-500">w toku</dd>
+        </div>
+        <div>
+          <dt class="text-2xl font-bold text-brand-dark">{zalatwione}</dt>
+          <dd class="text-sm text-slate-500">zakończonych</dd>
+        </div>
+        <div>
+          <dt class={`text-2xl font-bold ${przeterminowane > 0 ? 'text-red-600' : 'text-brand-dark'}`}>
+            {przeterminowane}
+          </dt>
+          <dd class="text-sm text-slate-500">po terminie</dd>
+        </div>
+      </dl>
+    )
+  }
+
   <ol class="space-y-4">
     {
-      wpisy.map((wpis) => (
-        <li class="rounded-lg border border-slate-200 p-4">
-          <a class="text-lg font-medium text-brand-dark hover:underline" href={`/wpis/${wpis.id}/`}>
-            {wpis.data.tytul}
-          </a>
-          <p class="mt-1 text-sm text-slate-500">
-            {wpis.data.data.toLocaleDateString('pl-PL')}
-            {wpis.data.urzad && <> · {wpis.data.urzad}</>}
-            {' · '}
-            <span class="font-medium">{statusLabel[wpis.data.status]}</span>
-          </p>
-        </li>
-      ))
+      wnioski.map((wniosek) => {
+        const ostatni = lastStep(wniosek.data.kroki);
+        const przeterminowany = hasOverdueStep(wniosek.data.kroki);
+        return (
+          <li class="rounded-lg border border-slate-200 p-4">
+            <a class="text-lg font-medium text-brand-dark hover:underline" href={`/wniosek/${wniosek.id}/`}>
+              {wniosek.data.tytul}
+            </a>
+            <p class="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-500">
+              <StatusBadge status={ostatni.status} />
+              {przeterminowany && (
+                <span class="rounded-full border border-red-300 bg-red-50 px-3 py-0.5 text-xs font-medium text-red-700">
+                  Po terminie
+                </span>
+              )}
+              {wniosek.data.instytucja && <span>· {wniosek.data.instytucja}</span>}
+              <span>· aktualizacja {ostatni.data.toLocaleDateString('pl-PL')}</span>
+            </p>
+          </li>
+        );
+      })
     }
   </ol>
 
-  {wpisy.length === 0 && (
+  {wnioski.length === 0 && (
     <p class="text-slate-500">
-      Jeszcze nic tu nie ma — dodaj pierwszy wpis w panelu pod adresem <code>/admin</code>.
+      Jeszcze nic tu nie ma — dodaj pierwszy wniosek w panelu pod adresem <code>/admin</code>.
     </p>
   )}
 </Layout>

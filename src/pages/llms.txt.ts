@@ -1,13 +1,18 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 import { site } from '../site.config';
+import { statusLabel, type WniosekStatus } from '../lib/wniosekStatus';
 
 // Konwencja llms.txt (https://llmstxt.org/) — zwięzłe, czysto tekstowe podsumowanie strony
 // z linkami, pomyślane do wczytania przez narzędzia oparte o modele językowe zamiast
 // przedzierania się przez HTML. Ten sam wzorzec, co w innym moim projekcie (eduacademy).
 export const GET: APIRoute = async ({ site: astroSite }) => {
-  const wpisy = (await getCollection('wpisy')).sort(
-    (a, b) => b.data.data.valueOf() - a.data.data.valueOf(),
+  function lastStep(kroki: { status: WniosekStatus; data: Date }[]) {
+    return [...kroki].sort((a, b) => b.data.valueOf() - a.data.valueOf())[0];
+  }
+
+  const wnioski = (await getCollection('wnioski')).sort(
+    (a, b) => lastStep(b.data.kroki).data.valueOf() - lastStep(a.data.kroki).data.valueOf(),
   );
 
   const lines = [
@@ -17,12 +22,12 @@ export const GET: APIRoute = async ({ site: astroSite }) => {
     '',
     `Prowadzi: ${site.prowadzacy}.`,
     '',
-    '## Wpisy (od najnowszego)',
+    '## Wnioski (od najnowszej aktualizacji)',
     '',
-    ...wpisy.map((wpis) => {
-      const url = new URL(`/wpis/${wpis.id}/`, astroSite).toString();
-      const data = wpis.data.data.toISOString().slice(0, 10);
-      return `- [${wpis.data.tytul}](${url}) — ${data}${wpis.data.urzad ? `, ${wpis.data.urzad}` : ''}`;
+    ...wnioski.map((wniosek) => {
+      const url = new URL(`/wniosek/${wniosek.id}/`, astroSite).toString();
+      const status = statusLabel(lastStep(wniosek.data.kroki).status);
+      return `- [${wniosek.data.tytul}](${url}) — ${status}${wniosek.data.instytucja ? `, ${wniosek.data.instytucja}` : ''}`;
     }),
   ];
 

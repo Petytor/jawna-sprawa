@@ -13,25 +13,45 @@ media_folder: 'src/assets/zalaczniki'
 public_folder: '/zalaczniki'
 
 collections:
-  - name: 'wpisy'
-    label: 'Wpisy sprawy'
-    folder: 'src/content/wpisy'
+  - name: 'wnioski'
+    label: 'Wnioski'
+    folder: 'src/content/wnioski'
     create: true
     slug: '{{year}}-{{month}}-{{day}}-{{slug}}'
     fields:
       - { label: 'Tytuł', name: 'tytul', widget: 'string' }
-      - { label: 'Data', name: 'data', widget: 'datetime', format: 'YYYY-MM-DD' }
-      - { label: 'Urząd / instytucja', name: 'urzad', widget: 'string', required: false }
-      - label: 'Status'
-        name: 'status'
-        widget: 'select'
-        options:
-          - { label: 'Złożone', value: 'zlozone' }
-          - { label: 'W toku', value: 'w_toku' }
-          - { label: 'Jest odpowiedź', value: 'odpowiedz' }
-          - { label: 'Załatwione', value: 'zalatwione' }
-          - { label: 'Odrzucone', value: 'odrzucone' }
-      - label: 'Załączniki'
+      - { label: 'Instytucja', name: 'instytucja', widget: 'string', required: false }
+      - label: 'Dokument (główny, do podglądu)'
+        name: 'dokument'
+        widget: 'file'
+        required: false
+        hint: 'PDF lub skan wniosku — pokazany jako podgląd na stronie sprawy.'
+      - label: 'Oś czasu'
+        name: 'kroki'
+        widget: 'list'
+        hint: 'Kolejność nie ma znaczenia — sortowane są automatycznie wg daty.'
+        fields:
+          - label: 'Status'
+            name: 'status'
+            widget: 'select'
+            options:
+              - { label: 'Złożony', value: 'zlozony' }
+              - { label: 'Oczekiwanie na odpowiedź', value: 'oczekiwanie_na_odpowiedz' }
+              - { label: 'Oczekiwanie na odwołanie', value: 'oczekiwanie_na_odwolanie' }
+              - { label: 'Załatwiony', value: 'zalatwiony' }
+              - { label: 'Odrzucony', value: 'odrzucony' }
+          - { label: 'Data', name: 'data', widget: 'datetime', format: 'YYYY-MM-DD' }
+          - { label: 'Opis (opcjonalnie)', name: 'opis', widget: 'text', required: false }
+          - label: 'Termin na wyjście z tego statusu (dni)'
+            name: 'deadlineDni'
+            widget: 'number'
+            required: false
+            value_type: 'int'
+            min: 1
+            max: 366
+            default: 14
+            hint: 'Zostaw puste, jeśli ten status nie ma ustawowego/umownego terminu.'
+      - label: 'Pozostałe załączniki'
         name: 'zalaczniki'
         widget: 'list'
         required: false

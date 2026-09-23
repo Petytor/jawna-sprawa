@@ -19,19 +19,41 @@ Wystarczy darmowe konto GitHub. Sześć kroków, ok. 5 minut:
    **New site** → wklej adres swojego repo.
 5. Wróć na swoją stronę pod adres `/admin` (np. `https://twoja-nazwa.pages.dev/admin`) i
    zaloguj się przez Decap Turbo.
-6. Gotowe — dodawaj wpisy w panelu. Każdy zapisany wpis to commit w Twoim repozytorium.
+6. Gotowe — dodawaj wnioski w panelu. Każdy zapisany wniosek to commit w Twoim repozytorium.
 
 Chcesz własną domenę zamiast `*.pages.dev`? Zobacz [„Własna domena”](#własna-domena) niżej.
 
 ## Co to robi
 
-- Każdy wpis to jedno zdarzenie w sprawie: pismo złożone, odpowiedź urzędu, notatka — z datą,
-  instytucją, statusem i załącznikami.
-- Panel edycji (`/admin`) **ostrzega przed zapisaniem** wpisu, jeśli wykryje w treści coś, co
-  może nie nadawać się do publikacji (PESEL, telefon, e-mail, adres) — patrz
+- Każdy **wniosek** to jedna sprawa prowadzona z instytucją: tytuł, opcjonalny główny
+  dokument do podglądu (PDF lub skan, wprost w przeglądarce), oś czasu statusów i treść w
+  Markdown.
+- **Oś czasu** to kolejne statusy sprawy (złożony, oczekiwanie na odpowiedź, oczekiwanie na
+  odwołanie, załatwiony, odrzucony — pełna lista i opis w [„Statusy i
+  terminy”](#statusy-i-terminy)), każdy z opcjonalnym terminem w dniach.
+- Strona główna pokazuje **zbiorcze statystyki** (liczba wniosków, w toku, zakończonych, po
+  terminie) — ten sam pomysł co paski postępu w petycjach na radzymin.mleczki.pl, tylko
+  liczony po statusach spraw zamiast po podpisach.
+- Panel edycji (`/admin`) **ostrzega przed zapisaniem** wniosku, jeśli wykryje w treści coś,
+  co może nie nadawać się do publikacji (PESEL, telefon, e-mail, adres) — patrz
   [„Anonimizacja”](#anonimizacja) niżej.
 - Strona jest w pełni statyczna: szybka, tania w hostowaniu (darmowa na Cloudflare Pages),
   dobrze widoczna dla wyszukiwarek i narzędzi AI (patrz [„SEO i LLM”](#seo-i-llm)).
+
+## Statusy i terminy
+
+Każdy krok osi czasu ma status i opcjonalny **termin w dniach** — ile czasu jest na wyjście z
+tego statusu, zanim uznajemy go za przeterminowany (domyślnie podpowiadane 14 dni, jak w KPA,
+ale to tylko podpowiedź — zmień albo usuń wedle własnej sprawy). Aktualny status sprawy to
+zawsze status **ostatniego** (wg daty) kroku — nie ma osobnego pola, które mogłoby się rozjechać
+z osią czasu.
+
+Termin liczy się od daty kroku do daty kroku następnego — a jeśli krok jest ostatni (sprawa
+wciąż w nim trwa), do dzisiejszej daty. Stąd cztery możliwe oceny, kolorowane na osi czasu:
+**w terminie** (zielony), **po terminie** (czerwony, krok już zakończony), **oczekiwanie**
+(żółty, krok trwa, termin jeszcze nie minął), **brak reakcji w terminie** (czerwony, krok
+trwa, termin już minął — to jedyny stan, który zmienia się sam, bez nowej publikacji, w miarę
+upływu czasu). Logika (z testami) jest w `src/lib/stepAssessment.ts`.
 
 ## Anonimizacja
 
@@ -40,7 +62,7 @@ sumą kontrolną, telefon, e-mail, wzorzec adresu) na żywo w podglądzie i pró
 potwierdzenie przed publikacją — ale to repozytorium jest **publiczne**, a historia Gita jest
 **trwała**. Samo „usunięcie” pliku później nie usuwa go z historii — poprawka po fakcie
 wymaga przepisania historii repo (`git filter-repo` / BFG Repo-Cleaner), nie zwykłego commita.
-Zawsze przeczytaj wpis przed publikacją, zwłaszcza załączane skany dokumentów.
+Zawsze przeczytaj wniosek przed publikacją, zwłaszcza załączany dokument i skany.
 
 ## Własna domena
 
@@ -59,9 +81,9 @@ Zawsze przeczytaj wpis przed publikacją, zwłaszcza załączane skany dokument�
 - `robots.txt` jawnie dopuszcza boty wyszukiwarek i modeli językowych (GPTBot, ClaudeBot,
   PerplexityBot, CCBot) — celem jest jak najszersza widoczność sprawy. Jeśli wolisz to
   odwrócić, edytuj `src/pages/robots.txt.ts`.
-- `llms.txt` — zwięzłe, czysto tekstowe podsumowanie strony z linkami do wszystkich wpisów,
+- `llms.txt` — zwięzłe, czysto tekstowe podsumowanie strony z linkami do wszystkich wniosków,
   w konwencji [llmstxt.org](https://llmstxt.org/), pomyślane do wczytania przez narzędzia AI.
-- Dane strukturalne (JSON-LD: `Article` na każdym wpisie, `WebSite` na stronie głównej) w
+- Dane strukturalne (JSON-LD: `Article` na każdym wniosku, `WebSite` na stronie głównej) w
   `src/layouts/Layout.astro`.
 
 ## Rozwój lokalny
@@ -70,6 +92,7 @@ Zawsze przeczytaj wpis przed publikacją, zwłaszcza załączane skany dokument�
 npm install
 npm run dev      # http://localhost:4321
 npm run lint      # astro check
+npm run test      # vitest — logika terminów (src/lib/stepAssessment.ts)
 npm run build
 ```
 
@@ -85,7 +108,7 @@ workera.
 
 ## Plany na później
 
-Czat na stronie z dostępem do historii wpisów, pomagający wyszukiwać informacje w sprawie —
+Czat na stronie z dostępem do historii wniosków, pomagający wyszukiwać informacje w sprawie —
 na razie nierozpoczęty, planowany jako osobny etap.
 
 ---

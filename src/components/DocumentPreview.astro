@@ -1,0 +1,32 @@
+---
+interface Props {
+  /** Ścieżka do pliku w public_folder Decap (patrz public/admin/config.yml). */
+  plik: string;
+}
+
+const { plik } = Astro.props;
+const extension = plik.split('.').pop()?.toLowerCase() ?? '';
+const isPdf = extension === 'pdf';
+const isImage = ['png', 'jpg', 'jpeg', 'webp', 'gif'].includes(extension);
+---
+
+<div class="rounded-lg border border-slate-200 p-4">
+  <div class="mb-2 flex items-center justify-between">
+    <h2 class="text-lg font-semibold">Dokument</h2>
+    <a class="text-sm text-brand hover:underline" href={plik} download>
+      Pobierz
+    </a>
+  </div>
+
+  {
+    isPdf ? (
+      <embed src={plik} type="application/pdf" class="h-[70vh] w-full rounded border border-slate-200" />
+    ) : isImage ? (
+      <img src={plik} alt="Podgląd dokumentu" class="w-full rounded border border-slate-200" />
+    ) : (
+      <p class="text-sm text-slate-500">
+        Podgląd niedostępny dla tego formatu pliku — użyj linku „Pobierz” powyżej.
+      </p>
+    )
+  }
+</div>

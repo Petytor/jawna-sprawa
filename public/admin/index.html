@@ -22,7 +22,7 @@
             return h(
               'div',
               { style: { padding: '12px', fontFamily: 'sans-serif', color: '#146c43' } },
-              '✓ Nie wykryto oczywistych danych do anonimizacji. To nie jest gwarancja — i tak przeczytaj wpis przed publikacją.',
+              '✓ Nie wykryto oczywistych danych do anonimizacji. To nie jest gwarancja — i tak przeczytaj wniosek przed publikacją.',
             );
           }
           return h(
@@ -48,19 +48,19 @@
             h(
               'p',
               {},
-              'To repozytorium jest publiczne. Po opublikowaniu wpis wejdzie do historii Gita na stałe — samo późniejsze "usunięcie" go stamtąd nie skasuje.',
+              'To repozytorium jest publiczne. Po opublikowaniu wniosek wejdzie do historii Gita na stałe — samo późniejsze "usunięcie" go stamtąd nie skasuje.',
             ),
           );
         },
       });
 
-      // registerPreviewTemplate przyjmuje nazwę kolekcji z config.yml — "wpisy".
-      CMS.registerPreviewTemplate('wpisy', PiiWarningPreview);
+      // registerPreviewTemplate przyjmuje nazwę kolekcji z config.yml — "wnioski".
+      CMS.registerPreviewTemplate("wnioski", PiiWarningPreview);
 
       // --- Warstwa 2: próba zatrzymania publikacji, jeśli coś wykryto i nikt tego nie potwierdził.
       // UWAGA przy wdrażaniu: dokumentacja Decap nie precyzuje wprost, czy rzucony wyjątek w
       // handlerze "prePublish" faktycznie anuluje publikację w każdej wersji CMS-a. Sprawdź to
-      // empirycznie po wdrożeniu (spróbuj opublikować wpis z PESEL-em i kliknąć "Anuluj" w
+      // empirycznie po wdrożeniu (spróbuj opublikować wniosek z PESEL-em i kliknąć "Anuluj" w
       // oknie potwierdzenia) — jeśli publikacja i tak przechodzi, warstwa 1 powyżej i tak
       // ostrzeże osobę edytującą, więc nic nie publikuje się "po cichu".
       CMS.registerEventListener({

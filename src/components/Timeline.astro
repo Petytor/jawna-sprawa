@@ -1,0 +1,58 @@
+---
+import StatusBadge from './StatusBadge.astro';
+import type { WniosekStatus } from '../lib/wniosekStatus';
+import { assessSteps, assessmentLabel, assessmentSummary, isPastDeadline } from '../lib/stepAssessment';
+
+interface Props {
+  kroki: { status: WniosekStatus; data: Date; opis?: string; deadlineDni?: number }[];
+  /** Ile wynosi "dziś" — parametr, żeby strona renderowała się deterministycznie przy każdym buildzie. */
+  today?: Date;
+}
+
+const { kroki, today = new Date() } = Astro.props;
+
+const sorted = [...kroki].sort((a, b) => a.data.valueOf() - b.data.valueOf());
+const assessments = assessSteps(kroki, today);
+// assessSteps klucze indeksuje wg oryginalnej tablicy `kroki` — potrzebujemy mapowania
+// posortowany-krok -> jego indeks w oryginalnej tablicy, żeby dobrać właściwą ocenę.
+const originalIndex = kroki.map((_, i) => i);
+
+const TIMING_STYLE: Record<string, { border: string; bg: string; text: string; icon: string }> = {
+  on_time: { border: 'border-emerald-600', bg: 'bg-emerald-50', text: 'text-emerald-800', icon: '✓' },
+  awaiting: { border: 'border-amber-600', bg: 'bg-amber-50', text: 'text-amber-800', icon: '⏳' },
+  late: { border: 'border-red-600', bg: 'bg-red-50', text: 'text-red-800', icon: '⚠' },
+  overdue: { border: 'border-red-600', bg: 'bg-red-50', text: 'text-red-800', icon: '⚠' },
+};
+---
+
+<ol class="space-y-6 border-l-2 border-slate-200 pl-6">
+  {
+    sorted.map((krok) => {
+      const index = originalIndex.find((i) => kroki[i] === krok)!;
+      const assessment = assessments.get(index);
+      const style = assessment ? TIMING_STYLE[assessment.timing] : null;
+
+      return (
+        <li class="relative">
+          <span class="absolute -left-[29px] top-1.5 h-3 w-3 rounded-full border-2 border-brand bg-white" />
+          <div class="flex flex-wrap items-center gap-2">
+            <StatusBadge status={krok.status} />
+            <span class="text-sm text-slate-500">{krok.data.toLocaleDateString('pl-PL')}</span>
+          </div>
+          {krok.opis && <p class="mt-1 text-sm text-slate-700">{krok.opis}</p>}
+          {assessment && style && (
+            <p class={`mt-2 rounded-r border-l-4 ${style.border} ${style.bg} ${style.text} px-3 py-1.5 text-sm`}>
+              <strong>
+                {style.icon} {assessmentLabel(assessment.timing)}:
+              </strong>{' '}
+              {assessmentSummary(assessment)}
+              {isPastDeadline(assessment.timing) && (
+                <span class="sr-only"> — termin przekroczony</span>
+              )}
+            </p>
+          )}
+        </li>
+      );
+    })
+  }
+</ol>

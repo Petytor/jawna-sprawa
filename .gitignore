@@ -1,5 +1,6 @@
 node_modules/
 dist/
 .astro/
+.vitest/
 .env
 .DS_Store
