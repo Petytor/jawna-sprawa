@@ -5,7 +5,7 @@
 # opisana w README.
 backend:
   name: turbo-github
-  repo: petytor/jawna-sprawa # PLACEHOLDER — nadpisywane automatycznie
+  repo: Petytor/jawna-sprawa
   branch: main
 
 publish_mode: simple
