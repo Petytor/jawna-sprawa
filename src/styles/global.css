@@ -1,0 +1,9 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/* Kolory marki — Tailwind 4 konfiguruje się w CSS (@theme), nie w tailwind.config.mjs. */
+@theme {
+  --color-brand: #0d5c63;
+  --color-brand-dark: #083c41;
+  --color-brand-accent: #e8a33d;
+}

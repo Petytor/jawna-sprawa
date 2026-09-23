@@ -1,0 +1,59 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const wpisy = await getCollection('wpisy');
+  return wpisy.map((wpis) => ({ params: { slug: wpis.id }, props: { wpis } }));
+}
+
+interface Props {
+  wpis: CollectionEntry<'wpisy'>;
+}
+
+const { wpis } = Astro.props;
+const { Content } = await render(wpis);
+
+const statusLabel: Record<string, string> = {
+  zlozone: 'Złożone',
+  w_toku: 'W toku',
+  odpowiedz: 'Jest odpowiedź',
+  zalatwione: 'Załatwione',
+  odrzucone: 'Odrzucone',
+};
+---
+
+<Layout
+  title={wpis.data.tytul}
+  description={wpis.data.urzad ? `${wpis.data.tytul} — ${wpis.data.urzad}` : wpis.data.tytul}
+  article={{ datePublished: wpis.data.data, dateModified: wpis.data.zaktualizowano }}
+>
+  <p class="mb-4"><a class="text-sm text-brand hover:underline" href="/">&larr; Wszystkie wpisy</a></p>
+
+  <article>
+    <h1 class="text-2xl font-bold text-brand-dark">{wpis.data.tytul}</h1>
+    <p class="mt-1 text-sm text-slate-500">
+      {wpis.data.data.toLocaleDateString('pl-PL')}
+      {wpis.data.urzad && <> · {wpis.data.urzad}</>}
+      {' · '}
+      <span class="font-medium">{statusLabel[wpis.data.status]}</span>
+    </p>
+
+    <div class="prose prose-slate mt-6 max-w-none">
+      <Content />
+    </div>
+
+    {wpis.data.zalaczniki.length > 0 && (
+      <div class="mt-8">
+        <h2 class="text-lg font-semibold">Załączniki</h2>
+        <ul class="mt-2 list-disc pl-5">
+          {wpis.data.zalaczniki.map((z) => (
+            <li>
+              <a class="text-brand hover:underline" href={z.plik}>{z.nazwa}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </article>
+</Layout>

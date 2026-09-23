@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>Panel edycji — jawna-sprawa</title>
+  </head>
+  <body>
+    <!-- Wersja Decap przypięta na sztywno (^3.0.0) celowo — to jest jawne, publiczne repo,
+         a nieoczekiwana zmiana zachowania CMS-a po cichej aktualizacji byłaby gorsza niż
+         ręczne podbicie wersji raz na jakiś czas. -->
+    <script src="https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <script src="/admin/pii-check.js"></script>
+    <script>
+      // --- Warstwa 1: widoczne ostrzeżenie w podglądzie, aktualizowane na bieżąco podczas pisania.
+      // To jest ta pewna, udokumentowana część mechanizmu — działa niezależnie od tego, czy
+      // poniższy hook prePublish faktycznie zatrzymuje publikację (patrz komentarz niżej).
+      var PiiWarningPreview = createClass({
+        render: function () {
+          var hits = PiiCheck.scanEntryData(this.props.entry.get('data'));
+          if (hits.length === 0) {
+            return h(
+              'div',
+              { style: { padding: '12px', fontFamily: 'sans-serif', color: '#146c43' } },
+              '✓ Nie wykryto oczywistych danych do anonimizacji. To nie jest gwarancja — i tak przeczytaj wpis przed publikacją.',
+            );
+          }
+          return h(
+            'div',
+            {
+              style: {
+                padding: '12px',
+                fontFamily: 'sans-serif',
+                background: '#fff6cc',
+                color: '#6e5200',
+                border: '2px solid #6e5200',
+                borderRadius: '6px',
+              },
+            },
+            h('strong', {}, '⚠ Możliwe dane wrażliwe w treści — sprawdź przed publikacją:'),
+            h(
+              'ul',
+              {},
+              hits.map(function (hit, i) {
+                return h('li', { key: i }, hit.type + ': ' + hit.match);
+              }),
+            ),
+            h(
+              'p',
+              {},
+              'To repozytorium jest publiczne. Po opublikowaniu wpis wejdzie do historii Gita na stałe — samo późniejsze "usunięcie" go stamtąd nie skasuje.',
+            ),
+          );
+        },
+      });
+
+      // registerPreviewTemplate przyjmuje nazwę kolekcji z config.yml — "wpisy".
+      CMS.registerPreviewTemplate('wpisy', PiiWarningPreview);
+
+      // --- Warstwa 2: próba zatrzymania publikacji, jeśli coś wykryto i nikt tego nie potwierdził.
+      // UWAGA przy wdrażaniu: dokumentacja Decap nie precyzuje wprost, czy rzucony wyjątek w
+      // handlerze "prePublish" faktycznie anuluje publikację w każdej wersji CMS-a. Sprawdź to
+      // empirycznie po wdrożeniu (spróbuj opublikować wpis z PESEL-em i kliknąć "Anuluj" w
+      // oknie potwierdzenia) — jeśli publikacja i tak przechodzi, warstwa 1 powyżej i tak
+      // ostrzeże osobę edytującą, więc nic nie publikuje się "po cichu".
+      CMS.registerEventListener({
+        name: 'prePublish',
+        handler: function (_ref) {
+          var entry = _ref.entry;
+          var hits = PiiCheck.scanEntryData(entry.get('data'));
+          if (hits.length === 0) return;
+          var list = hits.map(function (h) { return h.type + ': ' + h.match; }).join('\n');
+          var ok = window.confirm(
+            'Wykryto możliwe dane wrażliwe:\n\n' + list +
+              '\n\nTo repo jest publiczne, a historia Gita jest trwała.\n\nOpublikować mimo to?',
+          );
+          if (!ok) {
+            throw new Error('Publikacja przerwana: potwierdź lub usuń wykryte dane.');
+          }
+        },
+      });
+
+      CMS.init();
+    </script>
+  </body>
+</html>

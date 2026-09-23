@@ -1,0 +1,41 @@
+# Podmieniane automatycznie przy pierwszym uruchomieniu przez
+# .github/workflows/configure-on-first-run.yml — nie edytuj repo/site_domain ręcznie,
+# zostaną nadpisane. Backend: Decap Turbo (https://decapcms.org/docs/turbo-overview/) —
+# darmowe hostowane uwierzytelnianie, bez własnego serwera OAuth. Alternatywa (własny worker)
+# opisana w README.
+backend:
+  name: turbo-github
+  repo: petytor/jawna-sprawa # PLACEHOLDER — nadpisywane automatycznie
+  branch: main
+
+publish_mode: simple
+media_folder: 'src/assets/zalaczniki'
+public_folder: '/zalaczniki'
+
+collections:
+  - name: 'wpisy'
+    label: 'Wpisy sprawy'
+    folder: 'src/content/wpisy'
+    create: true
+    slug: '{{year}}-{{month}}-{{day}}-{{slug}}'
+    fields:
+      - { label: 'Tytuł', name: 'tytul', widget: 'string' }
+      - { label: 'Data', name: 'data', widget: 'datetime', format: 'YYYY-MM-DD' }
+      - { label: 'Urząd / instytucja', name: 'urzad', widget: 'string', required: false }
+      - label: 'Status'
+        name: 'status'
+        widget: 'select'
+        options:
+          - { label: 'Złożone', value: 'zlozone' }
+          - { label: 'W toku', value: 'w_toku' }
+          - { label: 'Jest odpowiedź', value: 'odpowiedz' }
+          - { label: 'Załatwione', value: 'zalatwione' }
+          - { label: 'Odrzucone', value: 'odrzucone' }
+      - label: 'Załączniki'
+        name: 'zalaczniki'
+        widget: 'list'
+        required: false
+        fields:
+          - { label: 'Nazwa', name: 'nazwa', widget: 'string' }
+          - { label: 'Plik', name: 'plik', widget: 'file' }
+      - { label: 'Treść', name: 'body', widget: 'markdown' }
