@@ -1,15 +1,12 @@
-# Podmieniane automatycznie przy pierwszym uruchomieniu przez
-# .github/workflows/configure-on-first-run.yml — nie edytuj repo/site_domain ręcznie,
-# zostaną nadpisane. Backend: Decap Turbo (https://decapcms.org/docs/turbo-overview/) —
-# darmowe hostowane uwierzytelnianie, bez własnego serwera OAuth. Alternatywa (własny worker)
-# opisana w README.
+# Po utworzeniu strony w Decap Turbo wklej jej identyfikator w pole turbo_site_id poniżej.
+# Panel i repozytorium używają darmowych planów dla jednej osoby prowadzącej stronę.
 backend:
   name: turbo-github
-  repo: Petytor/jawna-sprawa
+  turbo_site_id: 'UZUPELNIJ_ID_Z_DECAP_TURBO'
   branch: main
 
 publish_mode: simple
-media_folder: 'src/assets/zalaczniki'
+media_folder: 'public/zalaczniki'
 public_folder: '/zalaczniki'
 
 collections:
@@ -26,10 +23,10 @@ collections:
         widget: 'file'
         required: false
         hint: 'PDF lub skan wniosku — pokazany jako podgląd na stronie sprawy.'
-      - label: 'Oś czasu'
+      - label: 'Przebieg sprawy'
         name: 'kroki'
         widget: 'list'
-        hint: 'Kolejność nie ma znaczenia — sortowane są automatycznie wg daty.'
+        hint: 'Dodaj osobny wpis przy każdym ważnym wydarzeniu, np. wysłaniu pisma lub otrzymaniu odpowiedzi.'
         fields:
           - label: 'Status'
             name: 'status'
@@ -42,7 +39,7 @@ collections:
               - { label: 'Odrzucony', value: 'odrzucony' }
           - { label: 'Data', name: 'data', widget: 'datetime', format: 'YYYY-MM-DD' }
           - { label: 'Opis (opcjonalnie)', name: 'opis', widget: 'text', required: false }
-          - label: 'Termin na wyjście z tego statusu (dni)'
+          - label: 'Ile dni urząd ma na odpowiedź lub kolejny krok?'
             name: 'deadlineDni'
             widget: 'number'
             required: false
@@ -50,7 +47,7 @@ collections:
             min: 1
             max: 366
             default: 14
-            hint: 'Zostaw puste, jeśli ten status nie ma ustawowego/umownego terminu.'
+            hint: 'Opcjonalnie. Zostaw puste, jeśli nie chcesz pokazywać terminu.'
       - label: 'Pozostałe załączniki'
         name: 'zalaczniki'
         widget: 'list'
@@ -58,4 +55,4 @@ collections:
         fields:
           - { label: 'Nazwa', name: 'nazwa', widget: 'string' }
           - { label: 'Plik', name: 'plik', widget: 'file' }
-      - { label: 'Treść', name: 'body', widget: 'markdown' }
+      - { label: 'Opis sprawy i jej przebiegu', name: 'body', widget: 'markdown', hint: 'Napisz krótko, czego dotyczy sprawa. Możesz opisać odpowiedzi i swoje dalsze działania.' }

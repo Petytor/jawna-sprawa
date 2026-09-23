@@ -31,7 +31,15 @@ const zalatwione = wnioski.length - wToku;
   <header class="mb-8">
     <h1 class="text-3xl font-bold text-brand-dark">{site.nazwaSprawy}</h1>
     <p class="mt-2 text-slate-600">{site.opisSprawy}</p>
-    <p class="mt-1 text-sm text-slate-400">Prowadzi: {site.prowadzacy}</p>
+    <div class="mt-5 rounded-lg border border-brand/20 bg-brand/5 p-5 text-slate-700">
+      <p class="font-semibold text-brand-dark">Dla osób działających dla mieszkańców</p>
+      <p class="mt-2 text-sm leading-6">
+        Jeśli składasz wnioski do urzędów, działasz społecznie albo jesteś radnym lub radną,
+        możesz tutaj pokazać swoje pisma, odpowiedzi urzędu i kolejne kroki. Dzięki temu
+        mieszkańcy sami zobaczą, czym się zajmujesz i jak władza odpowiada obywatelom.
+      </p>
+      <p class="mt-3 text-xs text-slate-500">Prowadzi: {site.prowadzacy}</p>
+    </div>
   </header>
 
   {
@@ -66,7 +74,7 @@ const zalatwione = wnioski.length - wToku;
         const przeterminowany = hasOverdueStep(wniosek.data.kroki);
         return (
           <li class="rounded-lg border border-slate-200 p-4">
-            <a class="text-lg font-medium text-brand-dark hover:underline" href={`/wniosek/${wniosek.id}/`}>
+            <a class="text-lg font-medium text-brand-dark hover:underline" href={`${import.meta.env.BASE_URL}wniosek/${wniosek.id}/`}>
               {wniosek.data.tytul}
             </a>
             <p class="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-500">
@@ -87,7 +95,8 @@ const zalatwione = wnioski.length - wToku;
 
   {wnioski.length === 0 && (
     <p class="text-slate-500">
-      Jeszcze nic tu nie ma — dodaj pierwszy wniosek w panelu pod adresem <code>/admin</code>.
+      Jeszcze nic tu nie ma — dodaj pierwszy wpis w panelu pod adresem{' '}
+      <code>{import.meta.env.BASE_URL}admin/</code>.
     </p>
   )}
 </Layout>

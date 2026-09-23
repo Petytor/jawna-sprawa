@@ -25,7 +25,7 @@ export const GET: APIRoute = async ({ site: astroSite }) => {
     '## Wnioski (od najnowszej aktualizacji)',
     '',
     ...wnioski.map((wniosek) => {
-      const url = new URL(`/wniosek/${wniosek.id}/`, astroSite).toString();
+      const url = new URL(`${import.meta.env.BASE_URL}wniosek/${wniosek.id}/`, astroSite).toString();
       const status = statusLabel(lastStep(wniosek.data.kroki).status);
       return `- [${wniosek.data.tytul}](${url}) — ${status}${wniosek.data.instytucja ? `, ${wniosek.data.instytucja}` : ''}`;
     }),

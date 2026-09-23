@@ -26,7 +26,7 @@ const pierwszyKrok = [...wniosek.data.kroki].sort((a, b) => a.data.valueOf() - b
   description={wniosek.data.instytucja ? `${wniosek.data.tytul} — ${wniosek.data.instytucja}` : wniosek.data.tytul}
   article={{ datePublished: pierwszyKrok.data, dateModified: ostatniKrok.data }}
 >
-  <p class="mb-4"><a class="text-sm text-brand hover:underline" href="/">&larr; Wszystkie wnioski</a></p>
+  <p class="mb-4"><a class="text-sm text-brand hover:underline" href={import.meta.env.BASE_URL}>&larr; Wszystkie wpisy</a></p>
 
   <article>
     <div class="flex flex-wrap items-center gap-2">

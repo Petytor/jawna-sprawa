@@ -14,12 +14,12 @@ kroki:
     opis: Odpowiedź negatywna — otwarty termin na odwołanie.
 ---
 
-To jest przykładowy wniosek pokazujący pełny model: **dokument** (jeśli go dodasz w polu
-`dokument`), **oś czasu statusów** z terminami i treść w Markdown opisująca sprawę.
+To przykładowa sprawa. Zastąp ją własnym opisem, dodaj wysłane pismo i uzupełniaj kolejne
+wydarzenia, gdy przyjdzie odpowiedź albo podejmiesz dalsze działanie.
 
-Pierwszy krok (oczekiwanie na odpowiedź, 14 dni od 15.01) zakończył się 05.02 — 6 dni po
+Pierwszy krok (oczekiwanie na odpowiedź, 14 dni od 15.01) zakończył się 05.02 — 7 dni po
 terminie, więc oś czasu pokaże go na czerwono. Drugi krok (oczekiwanie na odwołanie) wciąż
 trwa — jego kolor zależy od dzisiejszej daty względem terminu.
 
-Usuń ten plik albo podmień go swoją pierwszą sprawą — albo po prostu zacznij edytować w
-panelu pod adresem `/admin`.
+Możesz zmienić ten przykład albo usunąć go i dodać własną sprawę w panelu pod adresem
+`/admin/`.

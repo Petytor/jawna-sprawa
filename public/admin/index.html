@@ -6,11 +6,9 @@
     <title>Panel edycji — jawna-sprawa</title>
   </head>
   <body>
-    <!-- Wersja Decap przypięta na sztywno (^3.0.0) celowo — to jest jawne, publiczne repo,
-         a nieoczekiwana zmiana zachowania CMS-a po cichej aktualizacji byłaby gorsza niż
-         ręczne podbicie wersji raz na jakiś czas. -->
-    <script src="https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-    <script src="/admin/pii-check.js"></script>
+    <!-- Backend Turbo jest obecnie w publicznej wersji beta; wymaga skryptu Decap @beta. -->
+    <script src="https://cdn.jsdelivr.net/npm/decap-cms@beta/dist/decap-cms.js"></script>
+    <script src="./pii-check.js"></script>
     <script>
       // --- Warstwa 1: widoczne ostrzeżenie w podglądzie, aktualizowane na bieżąco podczas pisania.
       // To jest ta pewna, udokumentowana część mechanizmu — działa niezależnie od tego, czy

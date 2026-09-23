@@ -4,8 +4,7 @@ import { tworcaSzablonu } from '../site.config';
 
 <footer class="mt-16 border-t border-slate-200 py-6 text-center text-sm text-slate-500">
   <p>
-    Szablon: <span class="font-medium text-slate-700">{tworcaSzablonu.nazwa}</span>
-    · <a class="underline hover:text-brand" href={tworcaSzablonu.linkKawa} rel="noopener">☕ Postaw kawę</a>
-    · <a class="underline hover:text-brand" href={tworcaSzablonu.linkInneProjekty} rel="noopener">Inne projekty</a>
+    Szablon stworzył <a class="font-medium text-slate-700 underline hover:text-brand" href={tworcaSzablonu.linkInneProjekty} target="_blank" rel="noreferrer">{tworcaSzablonu.nazwa}</a>.
+    Jeśli narzędzie Ci pomogło, możesz <a class="underline hover:text-brand" href={tworcaSzablonu.linkKawa} target="_blank" rel="noreferrer">postawić mi kawę</a>.
   </p>
 </footer>
