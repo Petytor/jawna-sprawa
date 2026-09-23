@@ -7,3 +7,7 @@
   --color-brand-dark: #083c41;
   --color-brand-accent: #e8a33d;
 }
+
+@media (min-width: 1024px) {
+  html { font-size: 18px; }
+}
